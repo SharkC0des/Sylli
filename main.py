@@ -10,9 +10,9 @@ def openFile():
         txt = page.extract_text()
 
         combined_pattern = '|'.join(date_patterns)
-        date = re.findall(combined_pattern, txt)
-        print(date)
-
+        dates = re.findall(combined_pattern, txt)
+        print(dates)
+#dd
 
 
 if __name__ == '__main__':
