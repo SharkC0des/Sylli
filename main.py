@@ -1,7 +1,7 @@
 import re
-import datetime
+
 import pdfplumber
-from dateutil import parser
+
 from date_patterns import date_patterns
 def openFile():
     get_file = input("File name: ")
