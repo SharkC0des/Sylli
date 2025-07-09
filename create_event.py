@@ -4,9 +4,10 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from main import Func
+from main_file import Func
 
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
+
 
 def get_creds():
     creds = None
@@ -32,19 +33,20 @@ def get_creds():
 def create_event(service):
     try:
         from_file = Func()
-        p = from_file.append_date_n_time
+        file = from_file.openFile()
+        dates = from_file.append_date_n_time
         i = 0
-        while i < len(p):
+        while i < len(dates):
             event = {
                 'summary': 'Google I/O 2015',
                 'location': '800 Howard St., San Francisco, CA 94103',
                 'description': 'A chance to hear more about Google\'s developer products.',
                 'start': {
-                    'dateTime': p[i] ,
+                    'dateTime': dates[i],
                     'timeZone': 'America/New_York',
                 },
                 'end': {
-                    'dateTime': p[i],
+                    'dateTime': dates[i],
                     'timeZone': 'America/New_York',
                 },
                 'recurrence': [
@@ -66,7 +68,7 @@ def create_event(service):
             created_event = service.events().insert(calendarId="primary", body=event).execute()
 
             print(f"Event Created: {created_event.get('htmlLink')}")
-            i +=1
+            i += 1
     except HttpError as error:
         print(f"An error as occurred {error}")
 
