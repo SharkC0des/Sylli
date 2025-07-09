@@ -10,8 +10,8 @@ An app that automatically create google calendar events when users upload their 
 
 ## Next-Steps
 
-- Analyze "Summary" or title of the documentation and include that in the events
-- Further testing on same dates, different times
+- [ ] Analyze "Summary" or title of the documentation and include that in the events
+- [ ] Further testing on same dates, different times
 
 ## Future ideas
 
