@@ -1,3 +1,4 @@
+from datetime import datetime
 date_patterns = [
             r'\b\d{4}-\d{2}-\d{2}\b',
             r'\b\d{2}/\d{2}/\d{4}\b',
@@ -8,3 +9,10 @@ date_patterns = [
             r'\b\d{1,2}/\d{1,2}/\d{2,4}\b',
             r'\b\d{1,2}[.\-]\d{1,2}[.\-]\d{2,4}\b',
         ]
+
+
+time_patterns = [
+    r'\d{1,2}:\d{2}(?::\d{2})?\s?(?:AM|PM|am|pm)?',  # 3:15 PM, 6:45:10
+]
+
+google_format = r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})'

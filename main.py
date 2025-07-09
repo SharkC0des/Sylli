@@ -1,6 +1,7 @@
 import re
 from dateutil import parser
-import pdfplumber
+#import pdfplumber
+import pymupdf
 from date_patterns import time_patterns
 from date_patterns import date_patterns
 
@@ -18,10 +19,12 @@ class Func:
 
 
     def openFile(self):
+        self.append_dates = []
+        self.append_date_n_time = []
         get_file = input("File name: ")
-        with pdfplumber.open(get_file) as pdf:
-            for page in pdf.pages:
-                txt = page.extract_text()
+        with pymupdf.open(get_file) as pdf:
+            for page in pdf:
+                txt = page.get_text()
                 self.date = r'\b(?:' + '|'.join(date_patterns)
                 self.time = r')\b(?:\s+' + '|'.join(time_patterns) + r')?'
                 self.combined_pattern = '|'.join(date_patterns)
@@ -30,41 +33,57 @@ class Func:
                 date_n_time = self.date + self.time
                 self.dates = re.findall(date_only, txt)
                 self.date_time = re.findall(date_n_time, txt)
-                print(self.dates)
+
+                for i in self.date_time:
+                    convert = parser.parse(i)
+                    i = convert.isoformat()
+                    self.append_date_n_time.append(i)
+
+                for i in self.dates:
+                    self.append_dates.append(i)
+
         return self.date_time
 
     def date_start(self):
         self.start = None
-        print(self.date_time, '3434')
-        for idx, i in enumerate(self.date_time):
-            for jdx, j in enumerate(self.date_time):
-                if self.dates[idx] == self.dates[jdx] and i < j:
-                    self.start = i
-                elif self.dates:
-                    self.start = i
-        convert = parser.parse(self.start)
-        self.start = convert.isoformat()
-        print(self.start)
+        frst = self.append_date_n_time[0]
+        for i in range(len(self.append_dates) - 1):
+            if self.append_dates[i] == self.append_dates[i+1]:
+                if self.append_date_n_time[i] < self.append_date_n_time[i+1]:
+                    self.start = self.append_date_n_time[i]
+
+            else:
+                for j in self.append_date_n_time:
+                    if j < frst:
+                        frst = j
+                        self.start = j
+                    else:
+                        self.start = frst
         return self.start
 
     def date_end(self):
         self.end = None
-        print(self.date_time, 'edt')
-        for idx, i in enumerate(self.date_time):
-            for jdx, j in enumerate(self.date_time):
-                # If dates are the same, Compare Time
-                if self.dates[idx] == self.dates[jdx] and i < j:
-                    self.end = j # J = Later date and time
-                elif self.dates:
-                    self.end = j
-        convert = parser.parse(self.end)
-        self.end = convert.isoformat()
-        print(self.end)
+        frst = self.append_date_n_time[0]
+        for i in range(len(self.append_dates) - 1):
+            if self.append_dates[i] == self.append_dates[i + 1]:
+                if self.append_date_n_time[i] < self.append_date_n_time[i + 1]:
+                    self.end = self.append_date_n_time[i]
+            else:
+                for j in self.append_date_n_time:
+                    if j > frst:
+                        frst = j
+                        self.end = j
+                    else:
+                        self.end = frst
         return self.end
+
+
+
+
 
 if __name__ == '__main__':
     main = Func()
     main.openFile()
-    main.date_start()
-    main.date_end()
+
+
 

@@ -31,42 +31,42 @@ def get_creds():
 
 def create_event(service):
     try:
-        f = Func()
-        file = f.openFile()
-        start = f.date_start()
-        end = f.date_end()
-        event = {
-            'summary': 'Google I/O 2015',
-            'location': '800 Howard St., San Francisco, CA 94103',
-            'description': 'A chance to hear more about Google\'s developer products.',
-            'start': {
-                'dateTime': start,
-                'timeZone': 'America/New_York',
-            },
-            'end': {
-                'dateTime': end,
-                'timeZone': 'America/New_York',
-            },
-            'recurrence': [
-                'RRULE:FREQ=DAILY;COUNT=1'
-            ],
-            # 'attendees': [
-            #     {'email': 'lpage@example.com'},
-            #     {'email': 'sbrin@example.com'},
-            # ],
-            'reminders': {
-                'useDefault': False,
-                'overrides': [
-                    {'method': 'email', 'minutes': 24 * 60},
-                    {'method': 'popup', 'minutes': 10},
+        from_file = Func()
+        p = from_file.append_date_n_time
+        i = 0
+        while i < len(p):
+            event = {
+                'summary': 'Google I/O 2015',
+                'location': '800 Howard St., San Francisco, CA 94103',
+                'description': 'A chance to hear more about Google\'s developer products.',
+                'start': {
+                    'dateTime': p[i] ,
+                    'timeZone': 'America/New_York',
+                },
+                'end': {
+                    'dateTime': p[i],
+                    'timeZone': 'America/New_York',
+                },
+                'recurrence': [
+                    'RRULE:FREQ=DAILY;COUNT=1'
                 ],
-            },
-        }
+                # 'attendees': [
+                #     {'email': 'lpage@example.com'},
+                #     {'email': 'sbrin@example.com'},
+                # ],
+                'reminders': {
+                    'useDefault': False,
+                    'overrides': [
+                        {'method': 'email', 'minutes': 24 * 60},
+                        {'method': 'popup', 'minutes': 10},
+                    ],
+                },
+            }
 
-        created_event = service.events().insert(calendarId="primary", body=event).execute()
+            created_event = service.events().insert(calendarId="primary", body=event).execute()
 
-        print(f"Event Created: {created_event.get('htmlLink')}")
-
+            print(f"Event Created: {created_event.get('htmlLink')}")
+            i +=1
     except HttpError as error:
         print(f"An error as occurred {error}")
 
