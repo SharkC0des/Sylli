@@ -12,7 +12,7 @@ date_patterns = [
 
 
 time_patterns = [
-    r'\d{1,2}:\d{2}(?::\d{2})?\s?(?:AM|PM|am|pm)?',  # 3:15 PM, 6:45:10
+    r'\d{1,2}:\d{2}(?::\d{2})?\s?(?:AM|PM|am|pm)?'
 ]
 
 google_format = r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})'
