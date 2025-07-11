@@ -95,17 +95,28 @@ def create_event(service):
                             created_date.append(start_[i])
                             created_date.append(start_[i+1])
                             mv = start_.pop(i)
-                            event['start']['dateTime'] = start_[i]
-                            event['end']['dateTime'] = mv
-                            start_.pop(i)
-                            start_.pop(i+1)
+                            if len(start_) == 1:
+                                event['start']['dateTime'] = start_[i]
+                                event['end']['dateTime'] = mv
+                                start_.pop(i)
+                            else:
+                                event['start']['dateTime'] = start_[i]
+                                event['end']['dateTime'] = mv
+                                start_.pop(i)
+
+
+
                             created_event = service.events().insert(calendarId="primary", body=event).execute()
                             print(f"Event Created: {created_event.get('htmlLink')}")
+
+                    if not start_:
+                        break
 
             else:
                 created_event = service.events().insert(calendarId="primary", body=event).execute()
                 print(f"Event Created: {created_event.get('htmlLink')}")
                 start_.pop(i)
+
 
 
 
