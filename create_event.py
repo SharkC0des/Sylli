@@ -36,36 +36,39 @@ def create_event(service):
         start_ = dp.time_start
         start_.sort(reverse=True)
         end_ = dp.time_end
-        for idx, start_time in enumerate(start_):
-            to_end = []
-            event = {
-                'summary': 'Google I/O 2015',
-                'location': '800 Howard St., San Francisco, CA 94103',
-                'description': 'A chance to hear more about Google\'s developer products.',
-                'start': {
-                    'dateTime': start_time,
-                    'timeZone': 'America/New_York',
-                },
+        created_date = []
+        for i in range(len(start_)):
+            for j in range(i + 1, len(start_)):
 
-                'end': {
-                    'dateTime': start_time,
-                    'timeZone': 'America/New_York',
-                },
-                'recurrence': [
-                    'RRULE:FREQ=DAILY;COUNT=1'
-                ],
-                # 'attendees': [
-                #     {'email': 'lpage@example.com'},
-                #     {'email': 'sbrin@example.com'},
-                # ],
-                'reminders': {
-                    'useDefault': False,
-                    'overrides': [
-                        {'method': 'email', 'minutes': 24 * 60},
-                        {'method': 'popup', 'minutes': 10},
+                to_end = []
+                event = {
+                    'summary': 'Google I/O 2015',
+                    'location': '800 Howard St., San Francisco, CA 94103',
+                    'description': 'A chance to hear more about Google\'s developer products.',
+                    'start': {
+                        'dateTime': start_[i],
+                        'timeZone': 'America/New_York',
+                    },
+
+                    'end': {
+                        'dateTime': start_[i],
+                        'timeZone': 'America/New_York',
+                    },
+                    'recurrence': [
+                        'RRULE:FREQ=DAILY;COUNT=1'
                     ],
-                },
-            }
+                    # 'attendees': [
+                    #     {'email': 'lpage@example.com'},
+                    #     {'email': 'sbrin@example.com'},
+                    # ],
+                    'reminders': {
+                        'useDefault': False,
+                        'overrides': [
+                            {'method': 'email', 'minutes': 24 * 60},
+                            {'method': 'popup', 'minutes': 10},
+                        ],
+                    },
+                }
             # to_end = []
             # for idx, val in enumerate(start_):
             #     same1 = datetime.strptime(start_[idx - 1][:10], '%Y-%m-%d')
@@ -76,20 +79,25 @@ def create_event(service):
             #             mv = start_.pop(idx)
             #             event.update(end=mv)
 
-            same1 = datetime.strptime(start_[idx - 1][:10], '%Y-%m-%d')
-            same2 = datetime.strptime(start_[1][:10], '%Y-%m-%d')
-            if same1 != same2:
-                created_event = service.events().insert(calendarId="primary", body=event).execute()
-                print(f"Event Created: {created_event.get('htmlLink')}")
-                continue
-            else:
-                if start_[idx - 1] < start_time:
-                    to_end.append(start_time)
-                    mv = start_.pop(idx - 1)
-                    event['start']['dateTime'] = mv
-                    event['end']['dateTime'] = start_[idx - 1]
-                    created_event = service.events().insert(calendarId="primary", body=event).execute()
-                    print(f"Event Created: {created_event.get('htmlLink')}")
+                same1 = datetime.strptime(start_[i][:10], '%Y-%m-%d')
+                same2 = datetime.strptime(start_[j][:10], '%Y-%m-%d')
+                if same1 != same2:
+                    if start_[i] not in created_date:
+                        created_date.append(start_[i])
+                        created_event = service.events().insert(calendarId="primary", body=event).execute()
+                        print(f"Event Created: {created_event.get('htmlLink')}")
+
+                else:
+                    if start_[i] > start_[j]:
+                        to_end.append(start_[i])
+                        if start_[i] not in created_date:
+                            created_date.append(start_[i])
+                            created_date.append(start_[j])
+                            mv = start_.pop(i)
+                            event['start']['dateTime'] = start_[i]
+                            event['end']['dateTime'] = mv
+                            created_event = service.events().insert(calendarId="primary", body=event).execute()
+                            print(f"Event Created: {created_event.get('htmlLink')}")
 
 
 
