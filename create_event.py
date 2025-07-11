@@ -4,7 +4,8 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from main_file import Func
+from datetime import datetime
+import date_patterns as dp
 
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
 
@@ -32,21 +33,22 @@ def get_creds():
 
 def create_event(service):
     try:
-        from_file = Func()
-        file = from_file.openFile()
-        dates = from_file.append_date_n_time
-        i = 0
-        while i < len(dates):
+        start_ = dp.time_start
+        start_.sort(reverse=True)
+        end_ = dp.time_end
+        for idx, start_time in enumerate(start_):
+            to_end = []
             event = {
                 'summary': 'Google I/O 2015',
                 'location': '800 Howard St., San Francisco, CA 94103',
                 'description': 'A chance to hear more about Google\'s developer products.',
                 'start': {
-                    'dateTime': dates[i],
+                    'dateTime': start_time,
                     'timeZone': 'America/New_York',
                 },
+
                 'end': {
-                    'dateTime': dates[i],
+                    'dateTime': start_time,
                     'timeZone': 'America/New_York',
                 },
                 'recurrence': [
@@ -64,11 +66,34 @@ def create_event(service):
                     ],
                 },
             }
+            # to_end = []
+            # for idx, val in enumerate(start_):
+            #     same1 = datetime.strptime(start_[idx - 1][:10], '%Y-%m-%d')
+            #     same2 = datetime.strptime(val[:10], '%Y-%m-%d')
+            #     if same1 == same2:
+            #         if same1[idx - 1] < val:
+            #             to_end.append(val)
+            #             mv = start_.pop(idx)
+            #             event.update(end=mv)
 
-            created_event = service.events().insert(calendarId="primary", body=event).execute()
+            same1 = datetime.strptime(start_[idx - 1][:10], '%Y-%m-%d')
+            same2 = datetime.strptime(start_[1][:10], '%Y-%m-%d')
+            if same1 != same2:
+                created_event = service.events().insert(calendarId="primary", body=event).execute()
+                print(f"Event Created: {created_event.get('htmlLink')}")
+                continue
+            else:
+                if start_[idx - 1] < start_time:
+                    to_end.append(start_time)
+                    mv = start_.pop(idx - 1)
+                    event['start']['dateTime'] = mv
+                    event['end']['dateTime'] = start_[idx - 1]
+                    created_event = service.events().insert(calendarId="primary", body=event).execute()
+                    print(f"Event Created: {created_event.get('htmlLink')}")
 
-            print(f"Event Created: {created_event.get('htmlLink')}")
-            i += 1
+
+
+
     except HttpError as error:
         print(f"An error as occurred {error}")
 
@@ -76,7 +101,5 @@ def create_event(service):
 def main():
     creds = get_creds()
     service = build('calendar', 'v3', credentials=creds)
+    dp.main()
     create_event(service)
-
-if __name__ == '__main__':
-    main()
